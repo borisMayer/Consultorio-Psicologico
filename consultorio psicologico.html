@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Consejería Reformado</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        import React, { useState } from 'react';
+import { Calendar, Clock, User, Mail, Phone, CreditCard, CheckCircle, ArrowRight, Brain, Heart, Shield } from 'lucide-react';
+
+const PsychologyClinic = () => {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [formData, setFormData] = useState({
+    nombre: '',
+    email: '',
+    telefono: '',
+    fecha: '',
+    hora: '',
+    motivo: ''
+  });
+  const [bookingConfirmed, setBookingConfirmed] = useState(false);
+
+  const horariosDisponibles = [
+    '09:00', '10:00', '11:00', '12:00',
+    '14:00', '15:00', '16:00', '17:00', '18:00'
+  ];
+
+  const servicios = [
+    {
+      titulo: 'Terapia Individual',
+      descripcion: 'Sesiones personalizadas enfocadas en tu bienestar emocional y crecimiento personal desde una perspectiva reformada.',
+      precio: '$45.000',
+      icono: User
+    },
+    {
+      titulo: 'Orientación Familiar',
+      descripcion: 'Fortalecimiento de vínculos familiares con principios bíblicos y psicología clínica.',
+      precio: '$60.000',
+      icono: Heart
+    },
+    {
+      titulo: 'Consejería Pastoral',
+      descripcion: 'Integración de fe y salud mental para enfrentar desafíos desde una cosmovisión reformada.',
+      precio: '$40.000',
+      icono: Brain
+    }
+  ];
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = () => {
+    if (formData.nombre && formData.email && formData.telefono && formData.fecha && formData.hora) {
+      setCurrentPage('payment');
+    }
+  };
+
+  const handlePayment = () => {
+    setBookingConfirmed(true);
+    setTimeout(() => {
+      setCurrentPage('confirmation');
+    }, 1500);
+  };
+
+  const HomePage = () => (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Brain className="w-8 h-8 text-blue-600" />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Centro de Consejería</h1>
+              <p className="text-sm text-gray-600">Psicología desde una perspectiva reformada</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setCurrentPage('booking')}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+          >
+            Agendar Hora <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="max-w-6xl mx-auto px-4 py-16 text-center">
+        <h2 className="text-5xl font-bold text-gray-800 mb-6">
+          Tu Bienestar Mental es Importante
+        </h2>
+        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          Ofrecemos atención psicológica profesional integrada con principios bíblicos reformados,
+          acompañándote en tu proceso de sanidad y crecimiento personal.
+        </p>
+        <div className="flex gap-4 justify-center">
+          <button
+            onClick={() => setCurrentPage('booking')}
+            className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg"
+          >
+            Agenda tu Primera Sesión
+          </button>
+          <button className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition">
+            Conoce Más
+          </button>
+        </div>
+      </section>
+
+      {/* Servicios */}
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <h3 className="text-3xl font-bold text-center text-gray-800 mb-12">Nuestros Servicios</h3>
+        <div className="grid md:grid-cols-3 gap-8">
+          {servicios.map((servicio, idx) => {
+            const IconComponent = servicio.icono;
+            return (
+              <div key={idx} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition">
+                <IconComponent className="w-12 h-12 text-blue-600 mb-4" />
+                <h4 className="text-xl font-bold text-gray-800 mb-3">{servicio.titulo}</h4>
+                <p className="text-gray-600 mb-4">{servicio.descripcion}</p>
+                <p className="text-2xl font-bold text-blue-600">{servicio.precio}</p>
+                <p className="text-sm text-gray-500 mt-1">por sesión (50 min)</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Valores */}
+      <section className="bg-blue-600 text-white py-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <h3 className="text-3xl font-bold text-center mb-12">Nuestros Valores</h3>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <Shield className="w-12 h-12 mx-auto mb-4" />
+              <h4 className="text-xl font-bold mb-2">Confidencialidad</h4>
+              <p>Tu privacidad es nuestra prioridad. Todas las sesiones son estrictamente confidenciales.</p>
+            </div>
+            <div className="text-center">
+              <Heart className="w-12 h-12 mx-auto mb-4" />
+              <h4 className="text-xl font-bold mb-2">Compasión</h4>
+              <p>Atención cálida y empática basada en el amor y la gracia de Cristo.</p>
+            </div>
+            <div className="text-center">
+              <Brain className="w-12 h-12 mx-auto mb-4" />
+              <h4 className="text-xl font-bold mb-2">Excelencia</h4>
+              <p>Profesionalismo y actualización constante en métodos terapéuticos.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-8">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <p className="mb-2">© 2024 Centro de Consejería Reformado</p>
+          <p className="text-gray-400">Contacto: contacto@consejeriareformada.cl | +56 9 1234 5678</p>
+        </div>
+      </footer>
+    </div>
+  );
+
+  const BookingPage = () => (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+        <button
+          onClick={() => setCurrentPage('home')}
+          className="text-blue-600 mb-6 hover:underline"
+        >
+          ← Volver al inicio
+        </button>
+        
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Agenda tu Cita</h2>
+        <p className="text-gray-600 mb-8">Completa el formulario para reservar tu sesión</p>
+
+        <div className="space-y-6">
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              <User className="w-4 h-4 inline mr-2" />
+              Nombre Completo
+            </label>
+            <input
+              type="text"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              <Mail className="w-4 h-4 inline mr-2" />
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              <Phone className="w-4 h-4 inline mr-2" />
+              Teléfono
+            </label>
+            <input
+              type="tel"
+              name="telefono"
+              value={formData.telefono}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                <Calendar className="w-4 h-4 inline mr-2" />
+                Fecha
+              </label>
+              <input
+                type="date"
+                name="fecha"
+                value={formData.fecha}
+                onChange={handleInputChange}
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">
+                <Clock className="w-4 h-4 inline mr-2" />
+                Hora
+              </label>
+              <select
+                name="hora"
+                value={formData.hora}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Seleccionar hora</option>
+                {horariosDisponibles.map((hora) => (
+                  <option key={hora} value={hora}>{hora}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Motivo de Consulta
+            </label>
+            <textarea
+              name="motivo"
+              value={formData.motivo}
+              onChange={handleInputChange}
+              rows="4"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Cuéntanos brevemente el motivo de tu consulta (opcional)"
+            />
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-blue-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg"
+          >
+            Continuar al Pago
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const PaymentPage = () => (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Pago de Sesión</h2>
+        <p className="text-gray-600 mb-8">Resumen de tu reserva</p>
+
+        <div className="bg-blue-50 p-6 rounded-lg mb-8">
+          <h3 className="font-bold text-gray-800 mb-4">Detalles de la Cita</h3>
+          <div className="space-y-2 text-gray-700">
+            <p><strong>Paciente:</strong> {formData.nombre}</p>
+            <p><strong>Fecha:</strong> {formData.fecha}</p>
+            <p><strong>Hora:</strong> {formData.hora}</p>
+            <p><strong>Email:</strong> {formData.email}</p>
+          </div>
+          <div className="border-t border-blue-200 mt-4 pt-4">
+            <div className="flex justify-between items-center text-xl font-bold">
+              <span>Total a Pagar:</span>
+              <span className="text-blue-600">$45.000</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              <CreditCard className="w-4 h-4 inline mr-2" />
+              Número de Tarjeta
+            </label>
+            <input
+              type="text"
+              placeholder="1234 5678 9012 3456"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">Vencimiento</label>
+              <input
+                type="text"
+                placeholder="MM/AA"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">CVV</label>
+              <input
+                type="text"
+                placeholder="123"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={handlePayment}
+            disabled={bookingConfirmed}
+            className="w-full bg-green-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition shadow-lg disabled:bg-gray-400 flex items-center justify-center gap-2"
+          >
+            {bookingConfirmed ? (
+              <>
+                <CheckCircle className="w-5 h-5" />
+                Pago Procesado
+              </>
+            ) : (
+              'Confirmar Pago'
+            )}
+          </button>
+        </div>
+
+        <p className="text-sm text-gray-500 text-center mt-6">
+          🔒 Pago seguro. Tus datos están protegidos.
+        </p>
+      </div>
+    </div>
+  );
+
+  const ConfirmationPage = () => (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-12 px-4 flex items-center justify-center">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircle className="w-12 h-12 text-white" />
+        </div>
+        
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">¡Cita Confirmada!</h2>
+        <p className="text-gray-600 mb-8">
+          Tu sesión ha sido agendada exitosamente. Recibirás un email de confirmación en breve.
+        </p>
+
+        <div className="bg-gray-50 p-6 rounded-lg mb-8 text-left">
+          <h3 className="font-bold text-gray-800 mb-4">Detalles de tu Cita</h3>
+          <div className="space-y-2 text-gray-700">
+            <p><strong>Paciente:</strong> {formData.nombre}</p>
+            <p><strong>Fecha:</strong> {formData.fecha}</p>
+            <p><strong>Hora:</strong> {formData.hora}</p>
+            <p><strong>Dirección:</strong> Av. Libertador Bernardo O'Higgins 123, Concepción</p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <button
+            onClick={() => {
+              setCurrentPage('home');
+              setFormData({
+                nombre: '',
+                email: '',
+                telefono: '',
+                fecha: '',
+                hora: '',
+                motivo: ''
+              });
+              setBookingConfirmed(false);
+            }}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Volver al Inicio
+          </button>
+          
+          <p className="text-sm text-gray-500">
+            Si necesitas cambiar o cancelar tu cita, contáctanos al +56 9 1234 5678
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {currentPage === 'home' && <HomePage />}
+      {currentPage === 'booking' && <BookingPage />}
+      {currentPage === 'payment' && <PaymentPage />}
+      {currentPage === 'confirmation' && <ConfirmationPage />}
+    </>
+  );
+};
+
+export default PsychologyClinic;
+    </script>
+</body>
+</html>
