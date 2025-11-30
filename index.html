@@ -1,196 +1,528 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Centro de Consejería Reformado - Psicología Cristiana</title>
-  <meta name="description" content="Centro de Consejería Psicológica Reformado - Agenda tu cita online" />
-  <meta name="keywords" content="psicología, consejería, terapia, reformado, Chile, Concepción" />
-  <link rel="canonical" href="https://consejeriareformada.cl/" />
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Centro de Consejería Reformado - Psicología Cristiana" />
-  <meta property="og:description" content="Centro de Consejería Psicológica Reformado - Agenda tu cita online" />
-  <meta property="og:locale" content="es_CL" />
-  <!-- Favicon (reemplazar por el archivo real) -->
-  <link rel="icon" href="/favicon.ico" />
-
-  <!-- Tailwind CSS (CDN para prototipo; en producción construir Tailwind y purgar CSS) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <style>
-    .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Centro de Consejería Psicológica Reformado - Agenda tu cita online">
+    <meta name="keywords" content="psicología, consejería, terapia, reformado, Chile, Concepción">
+    <title>Centro de Consejería Reformado - Psicología Cristiana</title>
+    
+    <!-- React y dependencias -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50">
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
 
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:block bg-blue-600 text-white p-2">Saltar al contenido</a>
+        const PsychologyClinic = () => {
+          const [currentPage, setCurrentPage] = useState('home');
+          const [formData, setFormData] = useState({
+            nombre: '',
+            email: '',
+            telefono: '',
+            fecha: '',
+            hora: '',
+            motivo: ''
+          });
+          const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
-  <!-- Header -->
-  <header class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <!-- Si tienes un logo en img, reemplaza este div por <img src="..." alt="Centro de Consejería Reformado" /> -->
-        <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold" aria-hidden="true">CR</div>
-        <div>
-          <h1 class="text-2xl font-bold text-gray-800">Centro de Consejería</h1>
-          <p class="text-sm text-gray-600">Psicología desde una perspectiva reformada</p>
-        </div>
-      </div>
+          const horariosDisponibles = [
+            '09:00', '10:00', '11:00', '12:00',
+            '14:00', '15:00', '16:00', '17:00', '18:00'
+          ];
 
-      <nav aria-label="Acciones principales">
-        <a aria-label="Agendar hora" href="#agenda" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
-          Agendar Hora
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-          </svg>
-        </a>
-      </nav>
-    </div>
-  </header>
+          const servicios = [
+            {
+              titulo: 'Terapia Individual',
+              descripcion: 'Sesiones personalizadas enfocadas en tu bienestar emocional y crecimiento personal desde una perspectiva reformada.',
+              precio: '$45.000',
+              icono: 'User'
+            },
+            {
+              titulo: 'Orientación Familiar',
+              descripcion: 'Fortalecimiento de vínculos familiares con principios bíblicos y psicología clínica.',
+              precio: '$60.000',
+              icono: 'Heart'
+            },
+            {
+              titulo: 'Consejería Pastoral',
+              descripcion: 'Integración de fe y salud mental para enfrentar desafíos desde una cosmovisión reformada.',
+              precio: '$40.000',
+              icono: 'Brain'
+            }
+          ];
 
-  <!-- Hero -->
-  <main id="main-content">
-    <section class="max-w-6xl mx-auto px-4 py-16 text-center">
-      <h2 class="text-5xl font-bold text-gray-800 mb-6">Tu Bienestar Mental es Importante</h2>
-      <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-        Ofrecemos atención psicológica profesional integrada con principios bíblicos reformados,
-        acompañándote en tu proceso de sanidad y crecimiento personal.
-      </p>
+          const handleInputChange = (e) => {
+            setFormData({
+              ...formData,
+              [e.target.name]: e.target.value
+            });
+          };
 
-      <div class="flex gap-4 justify-center flex-wrap">
-        <a aria-label="Agenda tu primera sesión" href="#agenda" class="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg">
-          Agenda tu Primera Sesión
-        </a>
-        <a aria-label="Conoce más sobre nuestros servicios" href="#servicios" class="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition">
-          Conoce Más
-        </a>
-      </div>
-    </section>
+          const handleSubmit = () => {
+            if (formData.nombre && formData.email && formData.telefono && formData.fecha && formData.hora) {
+              setCurrentPage('payment');
+            } else {
+              alert('Por favor completa todos los campos obligatorios');
+            }
+          };
 
-    <!-- Servicios -->
-    <section id="servicios" class="max-w-6xl mx-auto px-4 py-16">
-      <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">Nuestros Servicios</h3>
+          const handlePayment = () => {
+            setBookingConfirmed(true);
+            setTimeout(() => {
+              setCurrentPage('confirmation');
+            }, 1500);
+          };
 
-      <div class="grid md:grid-cols-3 gap-8">
-        <article class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition" aria-labelledby="serv-1-title">
-          <div class="w-12 h-12 rounded-md bg-blue-50 flex items-center justify-center text-blue-600 mb-4">TI</div>
-          <h4 id="serv-1-title" class="text-xl font-bold text-gray-800 mb-3">Terapia Individual</h4>
-          <p class="text-gray-600 mb-4">Sesiones personalizadas enfocadas en tu bienestar emocional y crecimiento personal desde una perspectiva reformada.</p>
-          <p class="text-2xl font-bold text-blue-600">$45.000</p>
-          <p class="text-sm text-gray-500 mt-1">por sesión (50 min)</p>
-        </article>
+          const Icon = ({ name, ...props }) => {
+            const LucideIcon = lucide[name];
+            return React.createElement(LucideIcon, props);
+          };
 
-        <article class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition" aria-labelledby="serv-2-title">
-          <div class="w-12 h-12 rounded-md bg-blue-50 flex items-center justify-center text-blue-600 mb-4">OF</div>
-          <h4 id="serv-2-title" class="text-xl font-bold text-gray-800 mb-3">Orientación Familiar</h4>
-          <p class="text-gray-600 mb-4">Fortalecimiento de vínculos familiares con principios bíblicos y psicología clínica.</p>
-          <p class="text-2xl font-bold text-blue-600">$60.000</p>
-          <p class="text-sm text-gray-500 mt-1">por sesión (50 min)</p>
-        </article>
+          const HomePage = () => (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+              {/* Header */}
+              <header className="bg-white shadow-sm sticky top-0 z-50">
+                <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Icon name="Brain" className="w-8 h-8 text-blue-600" />
+                    <div>
+                      <h1 className="text-2xl font-bold text-gray-800">Centro de Consejería</h1>
+                      <p className="text-sm text-gray-600">Psicología desde una perspectiva reformada</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setCurrentPage('booking')}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                  >
+                    Agendar Hora <Icon name="ArrowRight" className="w-4 h-4" />
+                  </button>
+                </div>
+              </header>
 
-        <article class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition" aria-labelledby="serv-3-title">
-          <div class="w-12 h-12 rounded-md bg-blue-50 flex items-center justify-center text-blue-600 mb-4">CP</div>
-          <h4 id="serv-3-title" class="text-xl font-bold text-gray-800 mb-3">Consejería Pastoral</h4>
-          <p class="text-gray-600 mb-4">Integración de fe y salud mental para enfrentar desafíos desde una cosmovisión reformada.</p>
-          <p class="text-2xl font-bold text-blue-600">$40.000</p>
-          <p class="text-sm text-gray-500 mt-1">por sesión (50 min)</p>
-        </article>
-      </div>
-    </section>
+              {/* Hero Section */}
+              <section className="max-w-6xl mx-auto px-4 py-16 text-center">
+                <h2 className="text-5xl font-bold text-gray-800 mb-6">
+                  Tu Bienestar Mental es Importante
+                </h2>
+                <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                  Ofrecemos atención psicológica profesional integrada con principios bíblicos reformados,
+                  acompañándote en tu proceso de sanidad y crecimiento personal.
+                </p>
+                <div className="flex gap-4 justify-center flex-wrap">
+                  <button
+                    onClick={() => setCurrentPage('booking')}
+                    className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg"
+                  >
+                    Agenda tu Primera Sesión
+                  </button>
+                  <button className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition">
+                    Conoce Más
+                  </button>
+                </div>
+              </section>
 
-    <!-- Valores -->
-    <section class="bg-blue-600 text-white py-16">
-      <div class="max-w-6xl mx-auto px-4">
-        <h3 class="text-3xl font-bold text-center mb-12">Nuestros Valores</h3>
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="text-center">
-            <div class="w-12 h-12 rounded-full bg-white text-blue-600 mx-auto mb-4 flex items-center justify-center">C</div>
-            <h4 class="text-xl font-bold mb-2">Confidencialidad</h4>
-            <p>Tu privacidad es nuestra prioridad. Todas las sesiones son estrictamente confidenciales.</p>
-          </div>
+              {/* Servicios */}
+              <section className="max-w-6xl mx-auto px-4 py-16">
+                <h3 className="text-3xl font-bold text-center text-gray-800 mb-12">Nuestros Servicios</h3>
+                <div className="grid md:grid-cols-3 gap-8">
+                  {servicios.map((servicio, idx) => (
+                    <div key={idx} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition">
+                      <Icon name={servicio.icono} className="w-12 h-12 text-blue-600 mb-4" />
+                      <h4 className="text-xl font-bold text-gray-800 mb-3">{servicio.titulo}</h4>
+                      <p className="text-gray-600 mb-4">{servicio.descripcion}</p>
+                      <p className="text-2xl font-bold text-blue-600">{servicio.precio}</p>
+                      <p className="text-sm text-gray-500 mt-1">por sesión (50 min)</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
 
-          <div class="text-center">
-            <div class="w-12 h-12 rounded-full bg-white text-blue-600 mx-auto mb-4 flex items-center justify-center">P</div>
-            <h4 class="text-xl font-bold mb-2">Compasión</h4>
-            <p>Atención cálida y empática basada en el amor y la gracia de Cristo.</p>
-          </div>
+              {/* Valores */}
+              <section className="bg-blue-600 text-white py-16">
+                <div className="max-w-6xl mx-auto px-4">
+                  <h3 className="text-3xl font-bold text-center mb-12">Nuestros Valores</h3>
+                  <div className="grid md:grid-cols-3 gap-8">
+                    <div className="text-center">
+                      <Icon name="Shield" className="w-12 h-12 mx-auto mb-4" />
+                      <h4 className="text-xl font-bold mb-2">Confidencialidad</h4>
+                      <p>Tu privacidad es nuestra prioridad. Todas las sesiones son estrictamente confidenciales.</p>
+                    </div>
+                    <div className="text-center">
+                      <Icon name="Heart" className="w-12 h-12 mx-auto mb-4" />
+                      <h4 className="text-xl font-bold mb-2">Compasión</h4>
+                      <p>Atención cálida y empática basada en el amor y la gracia de Cristo.</p>
+                    </div>
+                    <div className="text-center">
+                      <Icon name="Brain" className="w-12 h-12 mx-auto mb-4" />
+                      <h4 className="text-xl font-bold mb-2">Excelencia</h4>
+                      <p>Profesionalismo y actualización constante en métodos terapéuticos.</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
 
-          <div class="text-center">
-            <div class="w-12 h-12 rounded-full bg-white text-blue-600 mx-auto mb-4 flex items-center justify-center">E</div>
-            <h4 class="text-xl font-bold mb-2">Excelencia</h4>
-            <p>Profesionalismo y actualización constante en métodos terapéuticos.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Agenda (demo estático para vista previa) -->
-    <section id="agenda" class="max-w-2xl mx-auto px-4 py-16">
-      <div class="bg-white rounded-2xl shadow-xl p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">Agenda tu Cita (Demo)</h2>
-        <p class="text-gray-600 mb-6">Este formulario es estático en la vista previa. Para interactividad necesita un build de la app React o un servidor.</p>
-
-        <!-- Si planeas enviar a un backend, actualiza action y method -->
-        <form class="space-y-4" action="#" method="post" aria-label="Formulario de agendamiento">
-          <div>
-            <label for="nombre" class="block text-gray-700 mb-1 font-semibold">Nombre Completo</label>
-            <input id="nombre" name="nombre" type="text" class="w-full px-4 py-3 border rounded-lg" placeholder="Ingresa tu nombre completo" required />
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label for="email" class="block text-gray-700 mb-1 font-semibold">Email</label>
-              <input id="email" name="email" type="email" class="w-full px-4 py-3 border rounded-lg" placeholder="tu@email.com"
-                     required />
+              {/* Footer */}
+              <footer className="bg-gray-800 text-white py-8">
+                <div className="max-w-6xl mx-auto px-4 text-center">
+                  <p className="mb-2">© 2024 Centro de Consejería Reformado</p>
+                  <p className="text-gray-400">Contacto: contacto@consejeriareformada.cl | +56 9 1234 5678</p>
+                  <p className="text-gray-400 mt-2">Concepción, Chile</p>
+                </div>
+              </footer>
             </div>
-            <div>
-              <label for="telefono" class="block text-gray-700 mb-1 font-semibold">Teléfono</label>
-              <input id="telefono" name="telefono" type="tel" class="w-full px-4 py-3 border rounded-lg" placeholder="+56 9 1234 5678"
-                     pattern="^\+?\d{7,15}$" inputmode="tel" aria-describedby="telefonoHelp" />
-              <p id="telefonoHelp" class="text-xs text-gray-500 mt-1">Formato recomendado: +56 9 1234 5678</p>
+          );
+
+          const BookingPage = () => (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
+              <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+                <button
+                  onClick={() => setCurrentPage('home')}
+                  className="text-blue-600 mb-6 hover:underline flex items-center gap-2"
+                >
+                  <Icon name="ArrowLeft" className="w-4 h-4" />
+                  Volver al inicio
+                </button>
+                
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Agenda tu Cita</h2>
+                <p className="text-gray-600 mb-8">Completa el formulario para reservar tu sesión</p>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      <Icon name="User" className="w-4 h-4 inline mr-2" />
+                      Nombre Completo *
+                    </label>
+                    <input
+                      type="text"
+                      name="nombre"
+                      value={formData.nombre}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Ingresa tu nombre completo"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      <Icon name="Mail" className="w-4 h-4 inline mr-2" />
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="tu@email.com"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      <Icon name="Phone" className="w-4 h-4 inline mr-2" />
+                      Teléfono *
+                    </label>
+                    <input
+                      type="tel"
+                      name="telefono"
+                      value={formData.telefono}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="+56 9 1234 5678"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        <Icon name="Calendar" className="w-4 h-4 inline mr-2" />
+                        Fecha *
+                      </label>
+                      <input
+                        type="date"
+                        name="fecha"
+                        value={formData.fecha}
+                        onChange={handleInputChange}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">
+                        <Icon name="Clock" className="w-4 h-4 inline mr-2" />
+                        Hora *
+                      </label>
+                      <select
+                        name="hora"
+                        value={formData.hora}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      >
+                        <option value="">Seleccionar hora</option>
+                        {horariosDisponibles.map((hora) => (
+                          <option key={hora} value={hora}>{hora}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      Motivo de Consulta (Opcional)
+                    </label>
+                    <textarea
+                      name="motivo"
+                      value={formData.motivo}
+                      onChange={handleInputChange}
+                      rows="4"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Cuéntanos brevemente el motivo de tu consulta"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleSubmit}
+                    className="w-full bg-blue-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg flex items-center justify-center gap-2"
+                  >
+                    Continuar al Pago
+                    <Icon name="ArrowRight" className="w-5 h-5" />
+                  </button>
+                  
+                  <p className="text-sm text-gray-500 text-center">
+                    * Campos obligatorios
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          );
 
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label for="fecha" class="block text-gray-700 mb-1 font-semibold">Fecha</label>
-              <input id="fecha" name="fecha" type="date" class="w-full px-4 py-3 border rounded-lg" required />
+          const PaymentPage = () => (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
+              <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+                <button
+                  onClick={() => setCurrentPage('booking')}
+                  className="text-blue-600 mb-6 hover:underline flex items-center gap-2"
+                >
+                  <Icon name="ArrowLeft" className="w-4 h-4" />
+                  Volver
+                </button>
+
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Pago de Sesión</h2>
+                <p className="text-gray-600 mb-8">Resumen de tu reserva</p>
+
+                <div className="bg-blue-50 p-6 rounded-lg mb-8">
+                  <h3 className="font-bold text-gray-800 mb-4">Detalles de la Cita</h3>
+                  <div className="space-y-2 text-gray-700">
+                    <p><strong>Paciente:</strong> {formData.nombre}</p>
+                    <p><strong>Fecha:</strong> {new Date(formData.fecha).toLocaleDateString('es-CL')}</p>
+                    <p><strong>Hora:</strong> {formData.hora}</p>
+                    <p><strong>Email:</strong> {formData.email}</p>
+                    <p><strong>Teléfono:</strong> {formData.telefono}</p>
+                  </div>
+                  <div className="border-t border-blue-200 mt-4 pt-4">
+                    <div className="flex justify-between items-center text-xl font-bold">
+                      <span>Total a Pagar:</span>
+                      <span className="text-blue-600">$45.000 CLP</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      <Icon name="CreditCard" className="w-4 h-4 inline mr-2" />
+                      Número de Tarjeta
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="1234 5678 9012 3456"
+                      maxLength="19"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Vencimiento</label>
+                      <input
+                        type="text"
+                        placeholder="MM/AA"
+                        maxLength="5"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">CVV</label>
+                      <input
+                        type="text"
+                        placeholder="123"
+                        maxLength="4"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handlePayment}
+                    disabled={bookingConfirmed}
+                    className="w-full bg-green-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition shadow-lg disabled:bg-gray-400 flex items-center justify-center gap-2"
+                  >
+                    {bookingConfirmed ? (
+                      <>
+                        <Icon name="CheckCircle" className="w-5 h-5" />
+                        Procesando Pago...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Lock" className="w-5 h-5" />
+                        Confirmar Pago
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="mt-6 p-4 bg-green-50 rounded-lg">
+                  <p className="text-sm text-gray-700 text-center flex items-center justify-center gap-2">
+                    <Icon name="Shield" className="w-4 h-4 text-green-600" />
+                    Pago 100% seguro. Tus datos están protegidos con encriptación SSL.
+                  </p>
+                </div>
+
+                <p className="text-xs text-gray-400 text-center mt-4">
+                  Este es un demo. No se procesarán pagos reales.
+                </p>
+              </div>
             </div>
-            <div>
-              <label for="hora" class="block text-gray-700 mb-1 font-semibold">Hora</label>
-              <select id="hora" name="hora" class="w-full px-4 py-3 border rounded-lg" required>
-                <option value="">Seleccionar hora</option>
-                <option>09:00</option>
-                <option>10:00</option>
-                <option>11:00</option>
-                <option>14:00</option>
-              </select>
+          );
+
+          const ConfirmationPage = () => (
+            <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-12 px-4 flex items-center justify-center">
+              <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
+                <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                  <Icon name="CheckCircle" className="w-12 h-12 text-white" />
+                </div>
+                
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">¡Cita Confirmada!</h2>
+                <p className="text-gray-600 mb-8">
+                  Tu sesión ha sido agendada exitosamente. Recibirás un email de confirmación en breve.
+                </p>
+
+                <div className="bg-gray-50 p-6 rounded-lg mb-8 text-left">
+                  <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <Icon name="Calendar" className="w-5 h-5" />
+                    Detalles de tu Cita
+                  </h3>
+                  <div className="space-y-3 text-gray-700">
+                    <p className="flex items-center gap-2">
+                      <Icon name="User" className="w-4 h-4 text-blue-600" />
+                      <strong>Paciente:</strong> {formData.nombre}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Icon name="Calendar" className="w-4 h-4 text-blue-600" />
+                      <strong>Fecha:</strong> {new Date(formData.fecha).toLocaleDateString('es-CL', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Icon name="Clock" className="w-4 h-4 text-blue-600" />
+                      <strong>Hora:</strong> {formData.hora}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Icon name="MapPin" className="w-4 h-4 text-blue-600" />
+                      <strong>Dirección:</strong> Av. Libertador Bernardo O'Higgins 123, Oficina 405, Concepción
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Icon name="Mail" className="w-4 h-4 text-blue-600" />
+                      <strong>Email:</strong> {formData.email}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-lg mb-6">
+                  <p className="text-sm text-blue-800">
+                    <strong>Recordatorio:</strong> Por favor llega 10 minutos antes de tu cita. 
+                    Si necesitas cancelar, hazlo con al menos 24 horas de anticipación.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <button
+                    onClick={() => {
+                      setCurrentPage('home');
+                      setFormData({
+                        nombre: '',
+                        email: '',
+                        telefono: '',
+                        fecha: '',
+                        hora: '',
+                        motivo: ''
+                      });
+                      setBookingConfirmed(false);
+                    }}
+                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                  >
+                    <Icon name="Home" className="w-5 h-5" />
+                    Volver al Inicio
+                  </button>
+                  
+                  <div className="pt-4 border-t border-gray-200">
+                    <p className="text-sm text-gray-600 mb-2">
+                      <strong>¿Necesitas hacer cambios?</strong>
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Contáctanos al <strong>+56 9 1234 5678</strong> o escríbenos a{' '}
+                      <strong>contacto@consejeriareformada.cl</strong>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          );
 
-          <div>
-            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold">Enviar (Demo)</button>
-          </div>
-        </form>
-      </div>
-    </section>
-  </main>
+          return (
+            <>
+              {currentPage === 'home' && <HomePage />}
+              {currentPage === 'booking' && <BookingPage />}
+              {currentPage === 'payment' && <PaymentPage />}
+              {currentPage === 'confirmation' && <ConfirmationPage />}
+            </>
+          );
+        };
 
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-white py-8">
-    <div class="max-w-6xl mx-auto px-4 text-center">
-      <p class="mb-2">© 2024 Centro de Consejería Reformado</p>
-      <p class="text-gray-400">Contacto: <a href="mailto:contacto@consejeriareformada.cl" class="underline">contacto@consejeriareformada.cl</a> | <a href="tel:+56912345678" class="underline">+56 9 1234 5678</a></p>
-      <p class="text-gray-400 mt-2">Concepción, Chile</p>
-    </div>
-  </footer>
-
+        // Renderizar la aplicación
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<PsychologyClinic />);
+    </script>
 </body>
 </html>
