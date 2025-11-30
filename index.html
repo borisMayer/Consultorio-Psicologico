@@ -1,528 +1,444 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Centro de Consejería Psicológica Reformado - Agenda tu cita online">
-    <meta name="keywords" content="psicología, consejería, terapia, reformado, Chile, Concepción">
-    <title>Centro de Consejería Reformado - Psicología Cristiana</title>
-    
-    <!-- React y dependencias -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <style>
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-                sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState } = React;
 
-        const PsychologyClinic = () => {
-          const [currentPage, setCurrentPage] = useState('home');
-          const [formData, setFormData] = useState({
-            nombre: '',
-            email: '',
-            telefono: '',
-            fecha: '',
-            hora: '',
-            motivo: ''
-          });
-          const [bookingConfirmed, setBookingConfirmed] = useState(false);
+import React, { useMemo, useState } from "react";
+import { BookOpen, GraduationCap, Upload, Search, Filter, FileText, Tags, School, Library } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
-          const horariosDisponibles = [
-            '09:00', '10:00', '11:00', '12:00',
-            '14:00', '15:00', '16:00', '17:00', '18:00'
-          ];
+// -----------------------------
+// Datos simulados (MVP)
+// -----------------------------
+const resources = [
+  {
+    id: "r1",
+    titulo: "Introducción a la Hermenéutica Bíblica",
+    autores: ["Dra. M. Herrera"],
+    area: "Biblia",
+    tipo: "Artículo",
+    anio: 2023,
+    resumen:
+      "Marco metodológico para la interpretación bíblica en contextos latinoamericanos.",
+    etiquetas: ["hermenéutica", "exégesis", "contexto"],
+    archivoUrl: "/files/hermeneutica.pdf",
+  },
+  {
+    id: "r2",
+    titulo: "Teología Pastoral y Acompañamiento",
+    autores: ["P. J. Morales"],
+    area: "Pastoral",
+    tipo: "Libro",
+    anio: 2021,
+    resumen:
+      "Prácticas pastorales para comunidades rurales y urbanas.",
+    etiquetas: ["acompañamiento", "pastoral", "comunidad"],
+    archivoUrl: "/files/pastoral.pdf",
+  },
+  {
+    id: "r3",
+    titulo: "Historia de la Iglesia en Aysén",
+    autores: ["C. Soto", "A. Vega"],
+    area: "Historia",
+    tipo: "Tesis",
+    anio: 2024,
+    resumen:
+      "Estudio histórico sobre el desarrollo eclesial en la Patagonia chilena.",
+    etiquetas: ["historia", "patagonia", "iglesia"],
+    archivoUrl: "/files/iglesia_aysen.pdf",
+  },
+];
 
-          const servicios = [
-            {
-              titulo: 'Terapia Individual',
-              descripcion: 'Sesiones personalizadas enfocadas en tu bienestar emocional y crecimiento personal desde una perspectiva reformada.',
-              precio: '$45.000',
-              icono: 'User'
-            },
-            {
-              titulo: 'Orientación Familiar',
-              descripcion: 'Fortalecimiento de vínculos familiares con principios bíblicos y psicología clínica.',
-              precio: '$60.000',
-              icono: 'Heart'
-            },
-            {
-              titulo: 'Consejería Pastoral',
-              descripcion: 'Integración de fe y salud mental para enfrentar desafíos desde una cosmovisión reformada.',
-              precio: '$40.000',
-              icono: 'Brain'
-            }
-          ];
+const courses = [
+  {
+    id: "c1",
+    nombre: "Teología Sistemática I",
+    periodo: "2025-1",
+    docentes: ["Prof. L. Rojas"],
+    modulos: [
+      {
+        id: "m1",
+        titulo: "Revelación y Escritura",
+        items: [
+          { id: "i1", tipo: "Lectura", titulo: "Capítulo 1: Revelación", recursoRef: "r1" },
+          { id: "i2", tipo: "Tarea", titulo: "Ensayo breve (1000 palabras)", fecha: "2025-03-22" },
+        ],
+      },
+      {
+        id: "m2",
+        titulo: "Dios Uno y Trino",
+        items: [
+          { id: "i3", tipo: "Lectura", titulo: "Símbolos trinitarios clásicos", recursoRef: null },
+          { id: "i4", tipo: "Quiz", titulo: "Quiz semana 3", fecha: "2025-04-05" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "c2",
+    nombre: "Historia de la Iglesia Contemporánea",
+    periodo: "2025-1",
+    docentes: ["Dra. N. Campos"],
+    modulos: [
+      {
+        id: "m3",
+        titulo: "Siglo XX y movimientos",
+        items: [
+          { id: "i5", tipo: "Lectura", titulo: "Historia Iglesia Aysén", recursoRef: "r3" },
+          { id: "i6", tipo: "Foro", titulo: "Debate: Vaticano II", fecha: "2025-04-18" },
+        ],
+      },
+    ],
+  },
+];
 
-          const handleInputChange = (e) => {
-            setFormData({
-              ...formData,
-              [e.target.name]: e.target.value
-            });
-          };
+// -----------------------------
+// Componente principal
+// -----------------------------
+export default function RepositorioLMS() {
+  const [busqueda, setBusqueda] = useState("");
+  const [area, setArea] = useState<string | undefined>(undefined);
+  const [tipo, setTipo] = useState<string | undefined>(undefined);
+  const [anio, setAnio] = useState<string | undefined>(undefined);
+  const [etiquetas, setEtiquetas] = useState<string[]>([]);
+  const [tab, setTab] = useState("repositorio");
+  const [openUpload, setOpenUpload] = useState(false);
 
-          const handleSubmit = () => {
-            if (formData.nombre && formData.email && formData.telefono && formData.fecha && formData.hora) {
-              setCurrentPage('payment');
-            } else {
-              alert('Por favor completa todos los campos obligatorios');
-            }
-          };
+  const etiquetasDisponibles = useMemo(
+    () => Array.from(new Set(resources.flatMap((r) => r.etiquetas))),
+    []
+  );
 
-          const handlePayment = () => {
-            setBookingConfirmed(true);
-            setTimeout(() => {
-              setCurrentPage('confirmation');
-            }, 1500);
-          };
+  const resultados = useMemo(() => {
+    return resources.filter((r) => {
+      const matchTexto =
+        !busqueda ||
+        r.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
+        r.autores.join(" ").toLowerCase().includes(busqueda.toLowerCase()) ||
+        r.resumen.toLowerCase().includes(busqueda.toLowerCase());
+      const matchArea = !area || r.area === area;
+      const matchTipo = !tipo || r.tipo === tipo;
+      const matchAnio = !anio || String(r.anio) === anio;
+      const matchTags = etiquetas.length === 0 || etiquetas.every((t) => r.etiquetas.includes(t));
+      return matchTexto && matchArea && matchTipo && matchAnio && matchTags;
+    });
+  }, [busqueda, area, tipo, anio, etiquetas]);
 
-          const Icon = ({ name, ...props }) => {
-            const LucideIcon = lucide[name];
-            return React.createElement(LucideIcon, props);
-          };
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      {/* Header */}
+      <header className="sticky top-0 z-20 bg-white/80 backdrop-blur border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-3">
+          <Library className="text-indigo-600" />
+          <div>
+            <h1 className="text-2xl font-semibold">Repositorio Académico – Facultad de Educación Teológica</h1>
+            <p className="text-sm text-slate-600">Recursos, cursos y evaluaciones en un solo lugar (MVP tipo Canvas)</p>
+          </div>
+          <div className="ml-auto flex gap-2">
+            <Dialog open={openUpload} onOpenChange={setOpenUpload}>
+              <DialogTrigger asChild>
+                <Button className="bg-indigo-600 hover:bg-indigo-700">
+                  <Upload className="mr-2 h-4 w-4" /> Subir recurso
+                </Button>
+              </DialogTrigger>
+              <UploadDialog onClose={() => setOpenUpload(false)} />
+            </Dialog>
+          </div>
+        </div>
+      </header>
 
-          const HomePage = () => (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-              {/* Header */}
-              <header className="bg-white shadow-sm sticky top-0 z-50">
-                <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <Icon name="Brain" className="w-8 h-8 text-blue-600" />
-                    <div>
-                      <h1 className="text-2xl font-bold text-gray-800">Centro de Consejería</h1>
-                      <p className="text-sm text-gray-600">Psicología desde una perspectiva reformada</p>
+      {/* Tabs */}
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList className="grid grid-cols-3 w-full">
+            <TabsTrigger value="repositorio" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" /> Repositorio
+            </TabsTrigger>
+            <TabsTrigger value="aulas" className="flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" /> Aulas (LMS)
+            </TabsTrigger>
+            <TabsTrigger value="mi-biblioteca" className="flex items-center gap-2">
+              <School className="h-4 w-4" /> Mi Biblioteca
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Repositorio */}
+          <TabsContent value="repositorio" className="mt-6">
+            <div className="grid grid-cols-12 gap-6">
+              {/* Filtros */}
+              <aside className="col-span-12 lg:col-span-3">
+                <Card className="rounded-2xl shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Filter className="h-4 w-4" /> Filtros
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Buscar</label>
+                      <div className="relative">
+                        <Search className="h-4 w-4 absolute left-2 top-2.5 text-slate-500" />
+                        <Input
+                          placeholder="Título, autor, palabras clave"
+                          value={busqueda}
+                          onChange={(e) => setBusqueda(e.target.value)}
+                          className="pl-8"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <button
-                    onClick={() => setCurrentPage('booking')}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
-                  >
-                    Agendar Hora <Icon name="ArrowRight" className="w-4 h-4" />
-                  </button>
-                </div>
-              </header>
 
-              {/* Hero Section */}
-              <section className="max-w-6xl mx-auto px-4 py-16 text-center">
-                <h2 className="text-5xl font-bold text-gray-800 mb-6">
-                  Tu Bienestar Mental es Importante
-                </h2>
-                <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                  Ofrecemos atención psicológica profesional integrada con principios bíblicos reformados,
-                  acompañándote en tu proceso de sanidad y crecimiento personal.
-                </p>
-                <div className="flex gap-4 justify-center flex-wrap">
-                  <button
-                    onClick={() => setCurrentPage('booking')}
-                    className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg"
-                  >
-                    Agenda tu Primera Sesión
-                  </button>
-                  <button className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition">
-                    Conoce Más
-                  </button>
-                </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Área</label>
+                      <Select value={area} onValueChange={setArea}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Todas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Biblia">Biblia</SelectItem>
+                          <SelectItem value="Pastoral">Pastoral</SelectItem>
+                          <SelectItem value="Historia">Historia</SelectItem>
+                          <SelectItem value="Ética">Ética</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Tipo</label>
+                      <Select value={tipo} onValueChange={setTipo}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Artículo">Artículo</SelectItem>
+                          <SelectItem value="Libro">Libro</SelectItem>
+                          <SelectItem value="Tesis">Tesis</SelectItem>
+                          <SelectItem value="Recurso didáctico">Recurso didáctico</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Año</label>
+                      <Select value={anio} onValueChange={setAnio}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[2025, 2024, 2023, 2022, 2021].map((y) => (
+                            <SelectItem value={String(y)} key={y}>
+                              {y}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Etiquetas</label>
+                      <div className="flex flex-wrap gap-2">
+                        {etiquetasDisponibles.map((t) => {
+                          const active = etiquetas.includes(t);
+                          return (
+                            <Badge
+                              key={t}
+                              onClick={() =>
+                                setEtiquetas((prev) =>
+                                  active ? prev.filter((x) => x !== t) : [...prev, t]
+                                )
+                              }
+                              className={`cursor-pointer ${
+                                active ? "bg-indigo-600" : "bg-slate-200 text-slate-700"
+                              }`}
+                            >
+                              <Tags className="h-3 w-3 mr-1" /> {t}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={() => {
+                        setBusqueda("");
+                        setArea(undefined);
+                        setTipo(undefined);
+                        setAnio(undefined);
+                        setEtiquetas([]);
+                      }}>Limpiar</Button>
+                      <Button className="bg-indigo-600 hover:bg-indigo-700">Aplicar</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </aside>
+
+              {/* Resultados */}
+              <section className="col-span-12 lg:col-span-9 space-y-4">
+                {resultados.length === 0 ? (
+                  <Card className="rounded-2xl">
+                    <CardContent className="py-12 text-center text-slate-600">
+                      No se encontraron recursos con los criterios seleccionados.
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {resultados.map((r) => (
+                      <Card key={r.id} className="rounded-2xl shadow-sm">
+                        <CardHeader>
+                          <CardTitle className="text-base">{r.titulo}</CardTitle>
+                          <p className="text-sm text-slate-600">{r.autores.join(", ")}</p>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="flex gap-2">
+                            <Badge variant="secondary">{r.area}</Badge>
+                            <Badge variant="secondary">{r.tipo}</Badge>
+                            <Badge variant="secondary">{r.anio}</Badge>
+                          </div>
+                          <p className="text-sm text-slate-700 line-clamp-3">{r.resumen}</p>
+                          <div className="flex flex-wrap gap-2">
+                            {r.etiquetas.map((t) => (
+                              <Badge key={t} variant="outline">{t}</Badge>
+                            ))}
+                          </div>
+                          <div className="flex gap-2 pt-2">
+                            <Button variant="outline" className="gap-2">
+                              <FileText className="h-4 w-4" /> Ver / Descargar
+                            </Button>
+                            <Button variant="outline">Citar</Button>
+                            <Button className="bg-indigo-600 hover:bg-indigo-700">Guardar</Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </section>
-
-              {/* Servicios */}
-              <section className="max-w-6xl mx-auto px-4 py-16">
-                <h3 className="text-3xl font-bold text-center text-gray-800 mb-12">Nuestros Servicios</h3>
-                <div className="grid md:grid-cols-3 gap-8">
-                  {servicios.map((servicio, idx) => (
-                    <div key={idx} className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition">
-                      <Icon name={servicio.icono} className="w-12 h-12 text-blue-600 mb-4" />
-                      <h4 className="text-xl font-bold text-gray-800 mb-3">{servicio.titulo}</h4>
-                      <p className="text-gray-600 mb-4">{servicio.descripcion}</p>
-                      <p className="text-2xl font-bold text-blue-600">{servicio.precio}</p>
-                      <p className="text-sm text-gray-500 mt-1">por sesión (50 min)</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Valores */}
-              <section className="bg-blue-600 text-white py-16">
-                <div className="max-w-6xl mx-auto px-4">
-                  <h3 className="text-3xl font-bold text-center mb-12">Nuestros Valores</h3>
-                  <div className="grid md:grid-cols-3 gap-8">
-                    <div className="text-center">
-                      <Icon name="Shield" className="w-12 h-12 mx-auto mb-4" />
-                      <h4 className="text-xl font-bold mb-2">Confidencialidad</h4>
-                      <p>Tu privacidad es nuestra prioridad. Todas las sesiones son estrictamente confidenciales.</p>
-                    </div>
-                    <div className="text-center">
-                      <Icon name="Heart" className="w-12 h-12 mx-auto mb-4" />
-                      <h4 className="text-xl font-bold mb-2">Compasión</h4>
-                      <p>Atención cálida y empática basada en el amor y la gracia de Cristo.</p>
-                    </div>
-                    <div className="text-center">
-                      <Icon name="Brain" className="w-12 h-12 mx-auto mb-4" />
-                      <h4 className="text-xl font-bold mb-2">Excelencia</h4>
-                      <p>Profesionalismo y actualización constante en métodos terapéuticos.</p>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* Footer */}
-              <footer className="bg-gray-800 text-white py-8">
-                <div className="max-w-6xl mx-auto px-4 text-center">
-                  <p className="mb-2">© 2024 Centro de Consejería Reformado</p>
-                  <p className="text-gray-400">Contacto: contacto@consejeriareformada.cl | +56 9 1234 5678</p>
-                  <p className="text-gray-400 mt-2">Concepción, Chile</p>
-                </div>
-              </footer>
             </div>
-          );
+          </TabsContent>
 
-          const BookingPage = () => (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
-              <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-                <button
-                  onClick={() => setCurrentPage('home')}
-                  className="text-blue-600 mb-6 hover:underline flex items-center gap-2"
-                >
-                  <Icon name="ArrowLeft" className="w-4 h-4" />
-                  Volver al inicio
-                </button>
-                
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">Agenda tu Cita</h2>
-                <p className="text-gray-600 mb-8">Completa el formulario para reservar tu sesión</p>
-
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
-                      <Icon name="User" className="w-4 h-4 inline mr-2" />
-                      Nombre Completo *
-                    </label>
-                    <input
-                      type="text"
-                      name="nombre"
-                      value={formData.nombre}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Ingresa tu nombre completo"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
-                      <Icon name="Mail" className="w-4 h-4 inline mr-2" />
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="tu@email.com"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
-                      <Icon name="Phone" className="w-4 h-4 inline mr-2" />
-                      Teléfono *
-                    </label>
-                    <input
-                      type="tel"
-                      name="telefono"
-                      value={formData.telefono}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="+56 9 1234 5678"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        <Icon name="Calendar" className="w-4 h-4 inline mr-2" />
-                        Fecha *
-                      </label>
-                      <input
-                        type="date"
-                        name="fecha"
-                        value={formData.fecha}
-                        onChange={handleInputChange}
-                        min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                      />
+          {/* Aulas (LMS) */}
+          <TabsContent value="aulas" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {courses.map((c) => (
+                <Card key={c.id} className="rounded-2xl">
+                  <CardHeader>
+                    <CardTitle className="text-base">{c.nombre}</CardTitle>
+                    <p className="text-sm text-slate-600">{c.periodo} • {c.docentes.join(", ")}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {c.modulos.map((m) => (
+                      <div key={m.id} className="border rounded-xl p-3">
+                        <h4 className="text-sm font-medium">{m.titulo}</h4>
+                        <ul className="mt-2 space-y-2">
+                          {m.items.map((it) => (
+                            <li key={it.id} className="flex items-center justify-between text-sm">
+                              <span>
+                                <Badge variant="secondary" className="mr-2">{it.tipo}</Badge>
+                                {it.titulo}
+                              </span>
+                              {it.recursoRef && (
+                                <Button variant="outline" size="sm">Abrir recurso</Button>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                    <div className="pt-2">
+                      <Button variant="outline" className="w-full">Entrar al aula</Button>
                     </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-2">
-                        <Icon name="Clock" className="w-4 h-4 inline mr-2" />
-                        Hora *
-                      </label>
-                      <select
-                        name="hora"
-                        value={formData.hora}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                      >
-                        <option value="">Seleccionar hora</option>
-                        {horariosDisponibles.map((hora) => (
-                          <option key={hora} value={hora}>{hora}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
-                      Motivo de Consulta (Opcional)
-                    </label>
-                    <textarea
-                      name="motivo"
-                      value={formData.motivo}
-                      onChange={handleInputChange}
-                      rows="4"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Cuéntanos brevemente el motivo de tu consulta"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleSubmit}
-                    className="w-full bg-blue-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg flex items-center justify-center gap-2"
-                  >
-                    Continuar al Pago
-                    <Icon name="ArrowRight" className="w-5 h-5" />
-                  </button>
-                  
-                  <p className="text-sm text-gray-500 text-center">
-                    * Campos obligatorios
-                  </p>
-                </div>
-              </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          );
+          </TabsContent>
 
-          const PaymentPage = () => (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4">
-              <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-                <button
-                  onClick={() => setCurrentPage('booking')}
-                  className="text-blue-600 mb-6 hover:underline flex items-center gap-2"
-                >
-                  <Icon name="ArrowLeft" className="w-4 h-4" />
-                  Volver
-                </button>
+          {/* Mi biblioteca */}
+          <TabsContent value="mi-biblioteca" className="mt-6">
+            <Card className="rounded-2xl">
+              <CardContent className="py-12 text-center text-slate-600">
+                Aquí verás tus recursos guardados, cursos inscritos y actividad reciente.
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </main>
 
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">Pago de Sesión</h2>
-                <p className="text-gray-600 mb-8">Resumen de tu reserva</p>
+      {/* Footer */}
+      <footer className="border-t">
+        <div className="max-w-7xl mx-auto px-4 py-6 text-sm text-slate-500">
+          © {new Date().getFullYear()} Facultad de Educación Teológica • Repositorio & LMS (MVP). Cumple con WCAG 2.2 (AA) y mejores prácticas.
+        </div>
+      </footer>
+    </div>
+  );
+}
 
-                <div className="bg-blue-50 p-6 rounded-lg mb-8">
-                  <h3 className="font-bold text-gray-800 mb-4">Detalles de la Cita</h3>
-                  <div className="space-y-2 text-gray-700">
-                    <p><strong>Paciente:</strong> {formData.nombre}</p>
-                    <p><strong>Fecha:</strong> {new Date(formData.fecha).toLocaleDateString('es-CL')}</p>
-                    <p><strong>Hora:</strong> {formData.hora}</p>
-                    <p><strong>Email:</strong> {formData.email}</p>
-                    <p><strong>Teléfono:</strong> {formData.telefono}</p>
-                  </div>
-                  <div className="border-t border-blue-200 mt-4 pt-4">
-                    <div className="flex justify-between items-center text-xl font-bold">
-                      <span>Total a Pagar:</span>
-                      <span className="text-blue-600">$45.000 CLP</span>
-                    </div>
-                  </div>
-                </div>
+// -----------------------------
+// Diálogo de subida de recurso (MVP)
+// -----------------------------
+function UploadDialog({ onClose }: { onClose: () => void }) {
+  const [titulo, setTitulo] = useState("");
+  const [autores, setAutores] = useState("");
+  const [area, setArea] = useState<string | undefined>(undefined);
+  const [tipo, setTipo] = useState<string | undefined>(undefined);
+  const [anio, setAnio] = useState<string | undefined>(undefined);
+  const [resumen, setResumen] = useState("");
+  const [etiquetas, setEtiquetas] = useState<string>("");
+  const [aceptaLicencia, setAceptaLicencia] = useState(false);
 
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
-                      <Icon name="CreditCard" className="w-4 h-4 inline mr-2" />
-                      Número de Tarjeta
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="1234 5678 9012 3456"
-                      maxLength="19"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+  const canSubmit = titulo && autores && area && tipo && anio && aceptaLicencia;
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-2">Vencimiento</label>
-                      <input
-                        type="text"
-                        placeholder="MM/AA"
-                        maxLength="5"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-2">CVV</label>
-                      <input
-                        type="text"
-                        placeholder="123"
-                        maxLength="4"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handlePayment}
-                    disabled={bookingConfirmed}
-                    className="w-full bg-green-600 text-white py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition shadow-lg disabled:bg-gray-400 flex items-center justify-center gap-2"
-                  >
-                    {bookingConfirmed ? (
-                      <>
-                        <Icon name="CheckCircle" className="w-5 h-5" />
-                        Procesando Pago...
-                      </>
-                    ) : (
-                      <>
-                        <Icon name="Lock" className="w-5 h-5" />
-                        Confirmar Pago
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                  <p className="text-sm text-gray-700 text-center flex items-center justify-center gap-2">
-                    <Icon name="Shield" className="w-4 h-4 text-green-600" />
-                    Pago 100% seguro. Tus datos están protegidos con encriptación SSL.
-                  </p>
-                </div>
-
-                <p className="text-xs text-gray-400 text-center mt-4">
-                  Este es un demo. No se procesarán pagos reales.
-                </p>
-              </div>
-            </div>
-          );
-
-          const ConfirmationPage = () => (
-            <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-12 px-4 flex items-center justify-center">
-              <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
-                <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
-                  <Icon name="CheckCircle" className="w-12 h-12 text-white" />
-                </div>
-                
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">¡Cita Confirmada!</h2>
-                <p className="text-gray-600 mb-8">
-                  Tu sesión ha sido agendada exitosamente. Recibirás un email de confirmación en breve.
-                </p>
-
-                <div className="bg-gray-50 p-6 rounded-lg mb-8 text-left">
-                  <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <Icon name="Calendar" className="w-5 h-5" />
-                    Detalles de tu Cita
-                  </h3>
-                  <div className="space-y-3 text-gray-700">
-                    <p className="flex items-center gap-2">
-                      <Icon name="User" className="w-4 h-4 text-blue-600" />
-                      <strong>Paciente:</strong> {formData.nombre}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Icon name="Calendar" className="w-4 h-4 text-blue-600" />
-                      <strong>Fecha:</strong> {new Date(formData.fecha).toLocaleDateString('es-CL', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      })}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Icon name="Clock" className="w-4 h-4 text-blue-600" />
-                      <strong>Hora:</strong> {formData.hora}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Icon name="MapPin" className="w-4 h-4 text-blue-600" />
-                      <strong>Dirección:</strong> Av. Libertador Bernardo O'Higgins 123, Oficina 405, Concepción
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Icon name="Mail" className="w-4 h-4 text-blue-600" />
-                      <strong>Email:</strong> {formData.email}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 p-4 rounded-lg mb-6">
-                  <p className="text-sm text-blue-800">
-                    <strong>Recordatorio:</strong> Por favor llega 10 minutos antes de tu cita. 
-                    Si necesitas cancelar, hazlo con al menos 24 horas de anticipación.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <button
-                    onClick={() => {
-                      setCurrentPage('home');
-                      setFormData({
-                        nombre: '',
-                        email: '',
-                        telefono: '',
-                        fecha: '',
-                        hora: '',
-                        motivo: ''
-                      });
-                      setBookingConfirmed(false);
-                    }}
-                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
-                  >
-                    <Icon name="Home" className="w-5 h-5" />
-                    Volver al Inicio
-                  </button>
-                  
-                  <div className="pt-4 border-t border-gray-200">
-                    <p className="text-sm text-gray-600 mb-2">
-                      <strong>¿Necesitas hacer cambios?</strong>
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Contáctanos al <strong>+56 9 1234 5678</strong> o escríbenos a{' '}
-                      <strong>contacto@consejeriareformada.cl</strong>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-
-          return (
-            <>
-              {currentPage === 'home' && <HomePage />}
-              {currentPage === 'booking' && <BookingPage />}
-              {currentPage === 'payment' && <PaymentPage />}
-              {currentPage === 'confirmation' && <ConfirmationPage />}
-            </>
-          );
-        };
-
-        // Renderizar la aplicación
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<PsychologyClinic />);
-    </script>
-</body>
-</html>
+  return (
+    <DialogContent className="sm:max-w-xl">
+      <DialogHeader>
+        <DialogTitle>Subir nuevo recurso</DialogTitle>
+      </DialogHeader>
+      <div className="space-y-4">
+        <Input placeholder="Título" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
+        <Input placeholder="Autores (separados por coma)" value={autores} onChange={(e) => setAutores(e.target.value)} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Select value={area} onValueChange={setArea}>
+            <SelectTrigger><SelectValue placeholder="Área" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Biblia">Biblia</SelectItem>
+              <SelectItem value="Pastoral">Pastoral</SelectItem>
+              <SelectItem value="Historia">Historia</SelectItem>
+              <SelectItem value="Ética">Ética</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={tipo} onValueChange={setTipo}>
+            <SelectTrigger><SelectValue placeholder="Tipo" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Artículo">Artículo</SelectItem>
+              <SelectItem value="Libro">Libro</SelectItem>
+              <SelectItem value="Tesis">Tesis</SelectItem>
+              <SelectItem value="Recurso didáctico">Recurso didáctico</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={anio} onValueChange={setAnio}>
+            <SelectTrigger><SelectValue placeholder="Año" /></SelectTrigger>
+            <SelectContent>
+              {[2025, 2024, 2023, 2022, 2021].map((y) => (
+                <SelectItem value={String(y)} key={y}>{y}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Textarea placeholder="Resumen / Abstract" value={resumen} onChange={(e) => setResumen(e.target.value)} />
+        <Input placeholder="Etiquetas (separadas por coma)" value={etiquetas} onChange={(e) => setEtiquetas(e.target.value)} />
+        <div className="flex items-center gap-2 text-sm">
+          <Checkbox id="lic" checked={aceptaLicencia} onCheckedChange={(v) => setAceptaLicencia(Boolean(v))} />
+          <label htmlFor="lic">Confirmo derechos y licencia (p.ej., CC BY-NC) y protección de datos personales.</label>
+        </div>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={onClose}>Cancelar</Button>
+        <Button disabled={!canSubmit} className="bg-indigo-600 hover:bg-indigo-700">Guardar (MVP)</Button>
+      </DialogFooter>
+    </DialogContent>
+  );
+}
